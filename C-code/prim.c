@@ -10,19 +10,23 @@
 // Portanto, MAXM precisa suportar esse volume.
 
 
-#define INF 1000000000
+#define INF 65535
 // Indica que ainda não existe aresta conhecida conectando o vértice à árvore.
 // Não representa um peso real do grafo.
+// Na prática, será usado 65535 que é o maximo armazenado por u_int_16
 
 int head[MAXN];
 int to[2 * MAXM];
-int w[2 * MAXM];
+u_int16_t w[2 * MAXM];
 int nxt[2 * MAXM];
 int edge_cnt = 0;
 // head[u] → índice da primeira aresta do vértice u
 // to[e] → vértice de destino da aresta e
 // w[e] → peso da aresta e
 // nxt[e] → próxima aresta ligada ao mesmo vértice
+u_int16_t key[MAXN];
+u_int16_t parent[MAXN];
+u_int8_t visited[MAXN];
 
 int n, m;
 
@@ -40,25 +44,15 @@ void add_edge(int u, int v, int weight) {
     head[u] = edge_cnt++;
 }
 
-/// @brief Para cada vértice, armazena:
-// w → menor custo conhecido para conectá-lo à árvore
-// from → vértice de onde vem essa conexão mínima
-typedef struct {
-    int w;
-    int from;
-} MinEdge;
-
-
 void prim() {
-    MinEdge min_e[MAXN];
-    int selected[MAXN] = {0};
 
     for (int i = 0; i < n; i++) {
-        min_e[i].w = INF; // ainda não sabemos como conectar o vértice i.
-        min_e[i].from = -1; // não possui origem definida.
+        key[i] = INF;      // INF: ainda não sabemos alcançar esse vertice
+        parent[i] = INF;   // NIL: sem origem conhecida
+        visited[i] = 0;
     }
 
-    min_e[0].w = 0;
+    key[0] = 0;
 
     int total_cost = 0;
 
@@ -67,27 +61,27 @@ void prim() {
 
         // Escolhe o vértice, dentre os não conectados AINDA, que tenha menor aresta de conexão.
         for (int j = 0; j < n; j++) {
-            if (!selected[j] && (v == -1 || min_e[j].w < min_e[v].w)) {
+            if (!visited[j] && (v == -1 || key[j] < key[v])) {
                 v = j;
             }
         }
 
         // Se o menor custo continua sendo INF, entende que não existe aresta.
-        if (min_e[v].w == INF) {
+        if (key[v] == INF) {
             printf("Grafo não é conexo\n");
             return;
         }
 
-        selected[v] = 1;
+        visited[v] = 1;
         // Marca o vértice como incluído na árvore geradora mínima.
         // A partir deste ponto, ele passa a fazer parte da solução
         // e não será mais considerado nas próximas escolhas.
 
         
-        total_cost += min_e[v].w; // Adicionando ao custo total...
+        total_cost += key[v]; // Adicionando ao custo total...
 
-        if (min_e[v].from != -1) {
-            printf("%d %d (peso = %d)\n", min_e[v].from, v, min_e[v].w);
+        if (parent[v] != 65535) {
+            printf("%d %d (peso = %d)\n", parent[v], v, key[v]);
         }
 
         // Percorre os vizinhos do vértice recém-inserido.
@@ -97,9 +91,9 @@ void prim() {
         for (int e = head[v]; e != -1; e = nxt[e]) {
             int u = to[e];
 
-            if (!selected[u] && w[e] < min_e[u].w) {
-                min_e[u].w = w[e];
-                min_e[u].from = v;
+            if (!visited[u] && w[e] < key[u]) {
+                key[u] = w[e];
+                parent[u] = v;
             }
         }
     }
@@ -132,7 +126,7 @@ int main() {
     char file_case_4[] = "lista_case_4.txt";
 
     // Leitura da lista de adjacência
-    FILE *f = fopen(file_case_1, "r"); 
+    FILE *f = fopen(file_case_4, "r"); 
     if (!f) {
         printf("Erro ao abrir arquivo\n");
         return 1;
