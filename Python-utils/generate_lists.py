@@ -32,12 +32,9 @@ def salvar_lista_txt(adj_list, caminho):
                 if i < j:  # evita duplicar arestas
                     f.write(f"{i} {j} {w}\n")
 
-
-
-
-matriz = ler_matriz_txt("test_case_4.txt")
+matriz = ler_matriz_txt("/Users/juliasaboya/Desktop/Eng Comp/SEMB2026/T1-Prim/Test-cases/test_case_1.txt")
 lista = matriz_para_lista(matriz)
-salvar_lista_txt(lista, "lista_case_4.txt")
+salvar_lista_txt(lista, "/Users/juliasaboya/Desktop/Eng Comp/SEMB2026/T1-Prim/lista_case_1.txt")
 
 # conferir: printar primeiros vértices
 for i in range(5):
