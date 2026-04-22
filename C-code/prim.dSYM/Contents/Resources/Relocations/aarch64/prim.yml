@@ -1,0 +1,5 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/juliasaboya/Desktop/Eng Comp/SEMB2026/T1-Prim/C-code/prim'
+relocations:     []
+...
