@@ -34,14 +34,11 @@ def salvar_lista_txt(adj_list, caminho):
 
 
 
-# ------------------------
-# USO
-# ------------------------
+
 matriz = ler_matriz_txt("test_case_4.txt")
 lista = matriz_para_lista(matriz)
 salvar_lista_txt(lista, "lista_case_4.txt")
 
-
-# exemplo: printar primeiros vértices
+# conferir: printar primeiros vértices
 for i in range(5):
     print(f"{i}: {lista[i]}")

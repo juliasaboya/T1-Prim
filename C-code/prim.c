@@ -2,8 +2,11 @@
 #include <string.h>
 
 #define MAXN 431
-#define MAXM 100000 // pior caso: 100000; caso base: 860
-#define MAX_WEIGHT 65535
+#define MAXM 100000 
+// - Pior caso: 100000; para o caso de grafos completos 
+//   com 431 vertices temos   
+// - Caso base: 860
+#define INF 1000000000
 
 int head[MAXN];
 int to[2 * MAXM];
@@ -30,7 +33,7 @@ void prim() {
     int selected[MAXN] = {0};
 
     for (int i = 0; i < n; i++) {
-        min_e[i].w = MAX_WEIGHT;
+        min_e[i].w = INF;
         min_e[i].from = -1;
     }
 
@@ -41,14 +44,14 @@ void prim() {
     for (int i = 0; i < n; i++) {
         int v = -1;
 
-        // escolhe o menor vértice ainda não selecionado
+        // escolhe o vértice, dentre os não conectados, que tenha o menor peso para conectar 
         for (int j = 0; j < n; j++) {
             if (!selected[j] && (v == -1 || min_e[j].w < min_e[v].w)) {
                 v = j;
             }
         }
 
-        if (min_e[v].w >= MAX_WEIGHT) {
+        if (min_e[v].w == INF) {
             printf("Grafo não é conexo\n");
             return;
         }
