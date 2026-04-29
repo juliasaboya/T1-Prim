@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 
 #define MAXN 431
-#define MAXM 100000 
+#define MAXM 100000
 // Número máximo de arestas (sem considerar duplicação).
 // Para grafos completos com 431 vértices: E ≈ 92.665.
 // Como usamos lista de adjacência (grafo não direcionado),
@@ -13,20 +14,20 @@
 #define INF 65535
 // Indica que ainda não existe aresta conhecida conectando o vértice à árvore.
 // Não representa um peso real do grafo.
-// Na prática, será usado 65535 que é o maximo armazenado por u_int_16
+// Na prática, será usado 65535 que é o maximo armazenado por uint16_t
 
 int head[MAXN];
 int to[2 * MAXM];
-u_int16_t w[2 * MAXM];
+uint16_t w[2 * MAXM];
 int nxt[2 * MAXM];
 int edge_cnt = 0;
 // head[u] → índice da primeira aresta do vértice u
 // to[e] → vértice de destino da aresta e
 // w[e] → peso da aresta e
 // nxt[e] → próxima aresta ligada ao mesmo vértice
-u_int16_t key[MAXN];
-u_int16_t parent[MAXN];
-u_int8_t visited[MAXN];
+uint16_t key[MAXN];
+uint16_t parent[MAXN];
+uint8_t visited[MAXN];
 
 int n, m;
 
@@ -44,11 +45,11 @@ void add_edge(int u, int v, int weight) {
     head[u] = edge_cnt++;
 }
 
-void prim() {
+void prim(FILE *out) {
 
     for (int i = 0; i < n; i++) {
         key[i] = INF;      // INF: ainda não sabemos alcançar esse vertice
-        parent[i] = INF;   // NIL: sem origem conhecida
+        parent[i] = INF;   // INF: sem origem conhecida
         visited[i] = 0;
     }
 
@@ -69,6 +70,8 @@ void prim() {
         // Se o menor custo continua sendo INF, entende que não existe aresta.
         if (key[v] == INF) {
             printf("Grafo não é conexo\n");
+            fprintf(out, "Grafo não é conexo\n");
+            fclose(out);
             return;
         }
 
@@ -82,6 +85,7 @@ void prim() {
 
         if (parent[v] != 65535) {
             printf("%d %d (peso = %d)\n", parent[v], v, key[v]);
+            fprintf(out, "%d, %d (peso = %d)\n", parent[v], v, key[v]);
         }
 
         // Percorre os vizinhos do vértice recém-inserido.
@@ -99,6 +103,7 @@ void prim() {
     }
 
     printf("Custo total: %d\n", total_cost);
+    fprintf(out, "custo total: %d\n", total_cost);
 }
 
 // Utilitário para ler os .txt e usar as listas
@@ -107,7 +112,7 @@ void load_graph_simple(FILE *f) {
 
     while (fscanf(f, "%d %d %d", &u, &v, &weight) == 3) {
         add_edge(u, v, weight);
-        add_edge(v, u, weight); // não direcionado
+        add_edge(v, u, weight);
     }
 
     printf("Edges carregadas: %d\n", edge_cnt);
@@ -117,6 +122,12 @@ int main() {
     n = MAXN; // 431 vértices
     for (int i = 0; i < n; i++) {
         head[i] = -1;
+    }
+
+    FILE *out = fopen("saida4.txt", "w");
+    if (!out) {
+        printf("Erro ao criar arquivo\n");
+        return 1;
     }
 
     // declaração dos arquivos de teste
@@ -135,7 +146,7 @@ int main() {
     load_graph_simple(f);
 
     fclose(f);
-    prim();
+    prim(out);
+    fclose(out);
     return 0;
 }
-
